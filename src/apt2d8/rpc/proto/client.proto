@@ -1,0 +1,81 @@
+//
+// This file is part of apt2d8.
+//
+// Copyright (C) 2013  David Gnedt
+//
+// apt2d8 is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// apt2d8 is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with apt2d8.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package apt2d8.client;
+
+import "common.proto";
+
+message Request {
+	enum Type {
+		HOSTS = 0;
+		CHANGES = 1;
+		UPDATE = 2;
+		UPGRADE = 3;
+		QUIT = 4;
+	}
+	required Type type = 1;
+	// Used in CHANGES, UPDATE, UPGRADE requests
+	repeated HostChanges hosts = 2;
+}
+
+message HostsResponse {
+	repeated HostInfo hosts = 1;
+}
+
+message ChangesResponse {
+	repeated HostChanges hosts = 1;
+}
+
+message UpdateResponse {
+}
+
+message UpgradeResponse {
+	enum Status {
+		FINISHED = 0;
+		CONSOLE = 1;
+	}
+	required Host host = 1;
+	required Status status = 2;
+	optional bytes stdout = 3;
+	optional bytes stderr = 4;
+}
+
+message Host {
+	required string id = 1;
+}
+
+message HostInfo {
+	required Host host = 1;
+	required apt2d8.common.Version version = 2;
+	required apt2d8.common.Distribution distribution = 3;
+	optional apt2d8.common.Kernel kernel = 4;
+	optional string hostname = 5;
+	optional string domainname = 6;
+	optional float uptime = 7;
+	optional float loadavg1 = 8;
+	optional float loadavg5 = 9;
+	optional float loadavg15 = 10;
+}
+
+message HostChanges {
+	required Host host = 1;
+	repeated apt2d8.common.Change changes = 2;
+	optional uint64 last_update = 3;
+}
+

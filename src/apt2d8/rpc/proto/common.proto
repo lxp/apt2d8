@@ -1,0 +1,83 @@
+//
+// This file is part of apt2d8.
+//
+// Copyright (C) 2013  David Gnedt
+//
+// apt2d8 is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// apt2d8 is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with apt2d8.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package apt2d8.common;
+
+message Version {
+	required uint32 major = 1;
+	required uint32 minor = 2;
+	required uint32 patch = 3;
+}
+
+message Distribution {
+	required string type = 1;
+	required string architecture = 2;
+	repeated string foreign_architectures = 3;
+	optional string id = 4;
+	optional string release = 5;
+	optional string codename = 6;
+	optional string description = 7;
+}
+
+message Kernel {
+	optional string ostype = 1;
+	optional string osrelease = 2;
+	optional string version = 3;
+}
+
+message Source {
+	message Component {
+		required string name = 1;
+	}
+	required string type = 1;
+	optional string uri = 2;
+	optional string baseuri = 3;
+	optional string dist = 4;
+	repeated Component comps = 5;
+}
+
+message Change {
+	message Package {
+		required string name = 1;
+		optional PkgVersion installed = 2;
+		optional PkgVersion candidate = 3;
+	}
+	message PkgVersion {
+		required string version = 1;
+		optional string architecture = 2;
+		optional string origin = 3;
+		optional string archive = 4;
+		optional string component = 5;
+		optional uint64 size = 6;
+		optional uint64 installed_size = 7;
+		optional string source_name = 8;
+		optional string source_version = 9;
+	}
+	enum Operation {
+		INSTALL = 0;
+		REINSTALL = 1;
+		UPGRADE = 2;
+		DOWNGRADE = 3;
+		REMOVE = 4;
+		KEEP = 5;
+	}
+	required Package package = 1;
+	required Operation operation = 2;
+}
+

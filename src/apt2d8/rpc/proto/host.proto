@@ -1,0 +1,62 @@
+//
+// This file is part of apt2d8.
+//
+// Copyright (C) 2013  David Gnedt
+//
+// apt2d8 is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// apt2d8 is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with apt2d8.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+package apt2d8.host;
+
+import "common.proto";
+
+message Request {
+	enum Type {
+		SYSTEM_INFO = 0;
+		UPDATE = 1;
+		UPGRADE = 2;
+		QUIT = 3;
+	}
+	required Type type = 1;
+	// Used in UPGRADE requests
+	repeated apt2d8.common.Change changes = 2;
+}
+
+message SystemInfoResponse {
+	required apt2d8.common.Version version = 1;
+	required apt2d8.common.Distribution distribution = 2;
+	optional apt2d8.common.Kernel kernel = 3;
+	optional string hostname = 4;
+	optional string domainname = 5;
+	optional float uptime = 6;
+	optional float loadavg1 = 7;
+	optional float loadavg5 = 8;
+	optional float loadavg15 = 9;
+}
+
+message UpdateResponse {
+	repeated apt2d8.common.Source sources = 1;
+	repeated apt2d8.common.Change changes = 2;
+}
+
+message UpgradeResponse {
+	enum Status {
+		FINISHED = 0;
+		CONSOLE = 1;
+	}
+	required Status status = 1;
+	optional bytes stdout = 2;
+	optional bytes stderr = 3;
+}
+
