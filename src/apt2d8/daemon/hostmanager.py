@@ -37,7 +37,7 @@ class HostManager(object):
 		self.system_config = ConfigParser.SafeConfigParser()
 	
 	def _loadKeys(self, key_dir):
-		logger.debug('Loading SSH keys from directory %s' % key_dir)
+		logger.debug('Loading SSH keys from directory %s', key_dir)
 		self._keys.clear()
 		for entry in os.listdir(key_dir):
 			filename = os.path.join(key_dir, entry)
@@ -52,10 +52,10 @@ class HostManager(object):
 				
 				self._keys[entry] = key
 		
-		logger.debug('Loaded %d SSH key(s)' % len(self._keys))
+		logger.debug('Loaded %d SSH key(s)', len(self._keys))
 	
 	def _loadConfig(self, user_config, system_config):
-		logger.debug('Loading host configuration from %s and %s' % (user_config, system_config))
+		logger.debug('Loading host configuration from %s and %s', user_config, system_config)
 		self._hosts.clear()
 		self.user_config.read(user_config)
 		self.system_config.read(system_config)
@@ -86,7 +86,10 @@ class HostManager(object):
 	def updateHosts(self):
 		logger.info('Starting initial host update')
 		for h in self._hosts.itervalues():
-			h.update()
+			try:
+				h.update()
+			except:
+				logger.exception('Initial update of host %s failed', h.name)
 		
 		logger.info('Initial host update finished')
 	

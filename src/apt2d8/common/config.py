@@ -17,7 +17,6 @@
 # along with apt2d8.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BIN_PATH = '/home/r00t/uni/Bachelorpraktikum/src'
 USER_CONFIG_PATH = '/etc/apt2d8'
 SYSTEM_CONFIG_PATH = '/var/lib/apt2d8'
 LOG_PATH = '/var/log/apt2d8'

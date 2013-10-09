@@ -106,6 +106,14 @@ def loadChanges(client):
 
 def selectHosts(changes):
 	available_hosts = [h for h in changes.hosts if len(h.changes) > 0]
+	unknown_hosts = [h for h in changes.hosts if h.last_update == 0]
+	
+	if len(unknown_hosts) > 0:
+		print('The following hosts are unreachable:')
+		for h in unknown_hosts:
+			print('  %s' % h.host.id)
+		
+		print('')
 	
 	if len(available_hosts) < 1:
 		print('All hosts are up-to-date.')

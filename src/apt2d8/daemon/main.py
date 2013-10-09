@@ -42,7 +42,7 @@ def main():
 	
 	try:
 		# TODO: Add version
-		logger.info('apt2d8d %s Startup' % version.version_str)
+		logger.info('apt2d8d %s Startup', version.version_str)
 		
 		checkPrivileges()
 		
@@ -108,7 +108,7 @@ def setupLogging():
 		handler.setFormatter(formatter)
 		root_logger.addHandler(handler)
 	except IOError:
-		logger.error('Error while opening logfile %s. Exiting.' % logfile)
+		logger.error('Error while opening logfile %s. Exiting.', logfile)
 		silent_exit = True
 		sys.exit(1)
 
@@ -155,7 +155,7 @@ def daemonize():
 		with open(pidfile, 'w') as f:
 			f.write('%d\n' % os.getpid())
 	except IOError:
-		logger.error('Error while writing pid file %s. Exiting.' % pidfile)
+		logger.error('Error while writing pid file %s. Exiting.', pidfile)
 		silent_exit = True
 		sys.exit(1)
 	

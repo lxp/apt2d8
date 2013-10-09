@@ -145,7 +145,7 @@ class DebianSourceWatcher(SourceWatcher):
 				try:
 					return self._fetchHTTPLastModified(url)
 				except Exception, e:
-					logger.error('Error while fetching %s' % url)
+					logger.error('Error while fetching %s', url)
 	
 	def register(self, host, type, uri, baseuri, dist, components, architectures):
 		if type == 'deb':

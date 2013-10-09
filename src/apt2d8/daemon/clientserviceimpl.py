@@ -18,34 +18,41 @@
 #
 
 import hostmanager
-from ..rpc import clientservice
+from ..rpc import clientservice, rpcexception
 
 class ClientServiceImpl(clientservice.ClientService):
 	def getHosts(self, msg):
 		response = self.HostsResponse()
 		for name, h in hostmanager.manager.getHosts().iteritems():
-			sysinfo = h.getSystemInfo()
 			host = response.hosts.add()
 			host.host.id = name
-			host.version.major = sysinfo.version.major
-			host.version.minor = sysinfo.version.minor
-			host.version.patch = sysinfo.version.patch
-			host.distribution.type = sysinfo.distribution.type
-			host.distribution.architecture = sysinfo.distribution.architecture
-			host.distribution.foreign_architectures.extend(sysinfo.distribution.foreign_architectures)
-			host.distribution.id = sysinfo.distribution.id
-			host.distribution.release = sysinfo.distribution.release
-			host.distribution.codename = sysinfo.distribution.codename
-			host.distribution.description = sysinfo.distribution.description
-			host.kernel.ostype = sysinfo.kernel.ostype
-			host.kernel.osrelease = sysinfo.kernel.osrelease
-			host.kernel.version = sysinfo.kernel.version
-			host.hostname = sysinfo.hostname
-			host.domainname = sysinfo.domainname
-			host.uptime = sysinfo.uptime
-			host.loadavg1 = sysinfo.loadavg1
-			host.loadavg5 = sysinfo.loadavg5
-			host.loadavg15 = sysinfo.loadavg15
+			try:
+				sysinfo = h.getSystemInfo()
+				host.version.major = sysinfo.version.major
+				host.version.minor = sysinfo.version.minor
+				host.version.patch = sysinfo.version.patch
+				host.distribution.type = sysinfo.distribution.type
+				host.distribution.architecture = sysinfo.distribution.architecture
+				host.distribution.foreign_architectures.extend(sysinfo.distribution.foreign_architectures)
+				host.distribution.id = sysinfo.distribution.id
+				host.distribution.release = sysinfo.distribution.release
+				host.distribution.codename = sysinfo.distribution.codename
+				host.distribution.description = sysinfo.distribution.description
+				host.kernel.ostype = sysinfo.kernel.ostype
+				host.kernel.osrelease = sysinfo.kernel.osrelease
+				host.kernel.version = sysinfo.kernel.version
+				host.hostname = sysinfo.hostname
+				host.domainname = sysinfo.domainname
+				host.uptime = sysinfo.uptime
+				host.loadavg1 = sysinfo.loadavg1
+				host.loadavg5 = sysinfo.loadavg5
+				host.loadavg15 = sysinfo.loadavg15
+			except rpcexception.ProtocolException:
+				# Ignore host
+				pass
+			except rpcexception.RemoteException:
+				# Ignore host
+				pass
 		
 		return response
 	
@@ -56,8 +63,20 @@ class ClientServiceImpl(clientservice.ClientService):
 			host = hostmanager.manager.getHost(req_host.host.id)
 			resp_host = response.hosts.add()
 			resp_host.host.id = req_host.host.id
-			self._copyChangesToProto(host.getChanges(), resp_host.changes)
-			resp_host.last_update = long(host.getLastUpdate())
+			try:
+				host_changes = host.getChanges()
+				if host_changes is not None:
+					self._copyChangesToProto(host_changes, resp_host.changes)
+			except rpcexception.ProtocolException:
+				# Ignore host
+				pass
+			except rpcexception.RemoteException:
+				# Ignore host
+				pass
+			
+			last_update = host.getLastUpdate()
+			if last_update is not None:
+				resp_host.last_update = long(last_update)
 		
 		return response
 	

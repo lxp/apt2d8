@@ -54,7 +54,7 @@ class HostServiceImpl(hostservice.HostService):
 	
 	def _readProc(self, path):
 		with open('%s/%s' % (config.PROC_PATH, path)) as f:
-			return f.read()
+			return f.read().rstrip('\n')
 	
 	def doUpdate(self, msg):
 		response = self.UpdateResponse()

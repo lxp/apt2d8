@@ -123,17 +123,26 @@ class Host(object):
 				self.state = HostState.CONNECTED
 				self._systeminfo()
 				logger.info('Successfully connected')
+			except rpcexception.ProtocolException:
+				self._handleError()
+				raise
 			except rpcexception.RemoteException:
-				self._handleStderr()
+				self._handleError()
 				raise
 		elif self.state == HostState.CONNECTED:
 			pass
 		else:
 			raise HostException('Unexpected connection state')
 	
+	def _handleError(self):
+		self._handleStderr()
+		self.stub = None
+		self.client.close()
+		self.state = HostState.NONE
+	
 	def _handleStderr(self):
 		for line in self.stderr:
-			logger.error('stderr: %s' % line.rstrip('\n'))
+			logger.error('stderr: %s', line.rstrip('\n'))
 	
 	def _systeminfo(self):
 		if self.state == HostState.CONNECTED:
@@ -142,7 +151,7 @@ class Host(object):
 				self.systeminfo = self.stub.getSystemInfo()
 				self.state = HostState.CONNECTED
 			except rpcexception.RemoteException:
-				self._handleStderr()
+				self._handleError()
 				raise
 		else:
 			raise HostException('Unexpected connection state')
@@ -152,7 +161,7 @@ class Host(object):
 			logger.info('Starting host update')
 			try:
 				self.state = HostState.UPDATE
-				self.last_update = time.time()
+				start_time = time.time()
 				resp = self.stub.doUpdate()
 				
 				srcwatcher = sourcewatcher.manager.get(self.systeminfo.distribution.type)
@@ -174,10 +183,11 @@ class Host(object):
 				self.sources = new_sources
 				
 				self.changes = resp.changes
+				self.last_update = start_time
 				self.state = HostState.CONNECTED
 				logger.info('Host update finished')
 			except rpcexception.RemoteException:
-				self._handleStderr()
+				self._handleError()
 				raise
 		else:
 			raise HostException('Unexpected connection state')
@@ -190,7 +200,7 @@ class Host(object):
 				self.stub.writeUpgradeRequest(changes)
 				logger.info('Host upgrade finished')
 			except rpcexception.RemoteException:
-				self._handleStderr()
+				self._handleError()
 				raise
 		else:
 			raise HostException('Unexpected connection state')
@@ -208,7 +218,7 @@ class Host(object):
 				self.state = HostState.CONNECTED
 				logger.info('Host upgrade finished')
 			except rpcexception.RemoteException:
-				self._handleStderr()
+				self._handleError()
 				raise
 		else:
 			raise HostException('Unexpected connection state')
@@ -221,7 +231,7 @@ class Host(object):
 				self.stub = None
 				self.client.close()
 			except rpcexception.RemoteException:
-				self._handleStderr()
+				self._handleError()
 				raise
 		else:
 			raise HostException('Unexpected connection state')
@@ -231,7 +241,9 @@ class Host(object):
 	
 	def getSystemInfo(self):
 		if self.systeminfo is None:
+			self._connect()
 			self._systeminfo()
+			self._close()
 		
 		return self.systeminfo
 	

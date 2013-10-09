@@ -25,7 +25,7 @@ import subprocess
 from ..common import async
 from ..common import config
 
-WRAPPER_PATH = '%s/apt2d8/host/wrapper.py' % config.BIN_PATH
+WRAPPER_PATH = '%s/wrapper.py' % os.path.dirname(os.path.realpath(__file__))
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class PriviledgedExecution(object):
 	def __init__(self, args, async_manager = None):
 		self.cmd = ['sudo', WRAPPER_PATH]
 		self.cmd.extend(args)
-		logger.debug('Executing command: %s' % self.cmd)
+		logger.debug('Executing command: %s', self.cmd)
 		
 		self.async_manager = async_manager
 		

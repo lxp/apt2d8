@@ -28,8 +28,11 @@ logger = logging.getLogger(__name__)
 
 class ClientStreamRequestHandler(SocketServer.StreamRequestHandler):
 	def handle(self):
-		service = clientserviceimpl.ClientServiceImpl(self.rfile, self.wfile)
-		service.run()
+		try:
+			service = clientserviceimpl.ClientServiceImpl(self.rfile, self.wfile)
+			service.run()
+		except:
+			logger.exception('Client service failed')
 
 def start():
 	socket = '%s/apt2d8d.socket' % config.SOCKET_PATH

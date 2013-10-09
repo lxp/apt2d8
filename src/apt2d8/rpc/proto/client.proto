@@ -62,8 +62,8 @@ message Host {
 
 message HostInfo {
 	required Host host = 1;
-	required apt2d8.common.Version version = 2;
-	required apt2d8.common.Distribution distribution = 3;
+	optional apt2d8.common.Version version = 2;
+	optional apt2d8.common.Distribution distribution = 3;
 	optional apt2d8.common.Kernel kernel = 4;
 	optional string hostname = 5;
 	optional string domainname = 6;
